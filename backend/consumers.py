@@ -45,9 +45,19 @@ class ChatroomConsumer(WebsocketConsumer):
 
     def message_handler(self, event):
         print("Сообщение отправлено")
+
         message = event['message']
-        self.send(text_data=message)
+        sender_channel = event['sender_channel']
+
+        # Не отправлять сообщение пользователю который отправил исходное сообщение
+        if self.channel_name != sender_channel:
+            
+            self.send(text_data=message)
         
+            # await self.send(text_data=json.dumps({
+            #         'message': message
+            #     }))
+
 
     def receive(self, text_data):
         print("The message has been received: ", text_data)
@@ -55,6 +65,7 @@ class ChatroomConsumer(WebsocketConsumer):
         event = {
             "type": "message_handler",
             "message": text_data,
+            "sender_channel": self.channel_name,
 
         }
 
