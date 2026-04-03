@@ -11,6 +11,7 @@ def chat_image_path_setter(instance, filename):
 class Chatroom(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255, blank=False, null=False, verbose_name="Название чата")
+    description = models.TextField(blank=True, null=True)
     coverImage = models.ImageField(upload_to=chat_image_path_setter, blank=True, null=True)
 
     users_list = models.ManyToManyField(User, verbose_name='Участники', related_name="users")

@@ -18,4 +18,4 @@ class ChatroomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chatroom
-        fields = ("uuid", "title", "coverImage", "users_list", "created_by")
+        fields = ("uuid", "title", "description", "coverImage", "users_list", "created_by")
