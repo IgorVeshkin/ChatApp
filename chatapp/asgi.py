@@ -16,11 +16,13 @@ from channels.auth import AuthMiddlewareStack
 
 from backend.routing import ws_urlpatterns
 
+from backend.middleware import JWTCookiesAuthMiddlewareStack
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chatapp.settings')
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),    
-    "websocket": AuthMiddlewareStack(
+    "websocket": JWTCookiesAuthMiddlewareStack(
         URLRouter(ws_urlpatterns)
     )
     })

@@ -30,6 +30,8 @@ class ChatroomConsumer(WebsocketConsumer):
 
         # Getting user: self.scope["user"] --> AnonymousUser
 
+        print("User:", self.scope["user"])
+
         self.query_params = self.get_url_query_params()
 
         async_to_sync(self.channel_layer.group_add)(

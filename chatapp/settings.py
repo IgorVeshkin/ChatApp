@@ -58,9 +58,23 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOW_HEADERS = "*"
+# CORS_ALLOW_HEADERS = "*"
+
+
+
+# CORS_ALLOW_ALL_ORIGINS = True is not working with CORS_ALLOW_CREDENTIALS = True use CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:5173"] INSTALLED_APPS
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:5173", "http://localhost:5173",]
+
+# from corsheaders.defaults import default_headers
+
+# CORS_ALLOW_HEADERS = list(default_headers) + ['XSRFHeaderName']
+
+
 
 MEDIA_URL = '/media/'
 
@@ -107,7 +121,7 @@ DATABASES = {
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "backend.authentication.CookieJWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.AllowAny",
@@ -115,11 +129,21 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=8),
-    "REFRESH_TOKEN_LIFETIME": timedelta(hours=12),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    "AUTH_HEADER_TYPES": ("Bearer",),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
+    "REFRESH_TOKEN_LIFETIME": timedelta(hours=8),
+    "ROTATE_REFRESH_TOKENS": True,
+    
+    "AUTH_COOKIE_SAMESITE": "Lax",
+    "AUTH_COOKIE_SECURE": False,
+
+    # In order to use BLACKLIST you have to add rest_framework_simplejwt.token_blacklist in INSTALLED_APPS and execute python manage.py migrate to create table to track banned refresh_tokens
+
+    # 'BLACKLIST_AFTER_ROTATION': True, 
+
+
+    # No longer needed since cookies are used for authentication instead of headers in request
+
+    # "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 
