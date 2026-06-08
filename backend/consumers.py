@@ -4,6 +4,14 @@ from asgiref.sync import async_to_sync
 
 import urllib.parse
 
+import json
+
+from datetime import datetime
+
+from django.contrib.auth.models import User
+
+from .models import Chatroom
+
 
 class ChatroomConsumer(WebsocketConsumer):
 
@@ -34,6 +42,9 @@ class ChatroomConsumer(WebsocketConsumer):
 
         self.query_params = self.get_url_query_params()
 
+        if "chatroom_uuid" in self.query_params:
+            self.chatroom = Chatroom.objects.get(uuid=self.query_params["chatroom_uuid"])
+
         async_to_sync(self.channel_layer.group_add)(
            self.query_params["chatroom_uuid"], self.channel_name # "Test_Chat_name" # "Test_channel_name" 
         )
@@ -45,11 +56,32 @@ class ChatroomConsumer(WebsocketConsumer):
         print("Connected successfully....")
 
 
+    
+    def message_db_save(self, message_data: dict) -> None:
+        """
+        Функция: сохраняет сообщение в базе данных
+        Принимает: данные сообщения в формате dict
+        """
+
+        user = User.objects.get(username=message_data["username"])
+
+        # Если отправитель сообщения является участником чата
+        if user.id in self.chatroom.users_list.values_list("id", flat=True):
+            
+            print(self.chatroom.users_list.values_list("id", flat=True))
+            print(user.id)
+            print(message_data)
+
+
     def message_handler(self, event):
         print("Сообщение отправлено")
 
         message = event['message']
         sender_channel = event['sender_channel']
+
+        msg_data = json.loads(message)
+
+        self.message_db_save(msg_data)
 
         # Не отправлять сообщение пользователю который отправил исходное сообщение
         if self.channel_name != sender_channel:
